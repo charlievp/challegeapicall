@@ -1,0 +1,36 @@
+I would look at this with a chain building issue with the HAproxy unable to identify "Digicerts" root certificate. If I can view the logs and have access to the system, I think I can fix this.
+
+Below solution can be attempted.
+
+
+Option 1) Ensure the pem file at /etc/ssl1/certs1/combined.pem has all the certs in order of server cert, intermediate,           root CA
+
+         a) Use the website below to verify the cert by copy pasting the pem content 
+            https://www.sslshopper.com/certificate-decoder.html
+         b) If it returns error, I would suggest to update the pem correctly in the order
+
+          Combining CA certs to a pem file commands:
+
+             1) Download the CA certs as Root.pem and intermediate.pem and copy it to the same path /etc/ssl1/certs1/ and    run below command
+
+cat fqdnname.crt intermediate.pem root.pem fqdnname.key > Combined.pem
+
+
+
+
+Option 2) If the CA certificate and all intermediate certificate are included in the combined.pem then below can be tried
+        a) Add verify optional in the bind of ha proxy config
+            bind *:443 ssl crt /etc/ssl1/certs1/combined.pem verify optional
+            bind *:8443 ssl crt /etc/ssl1/certs1/combined.pem verify optional
+        b) Resatrt the haproxy
+        c) Test
+
+
+Option 3) This can be tried if above two options fail 
+        a) pass CA cert as different argument in the bind command like below
+        b) Save the CA file CN=CAname as a CAchain.pem
+        c) Save the domain certificate and key as combined.pem
+        d) Add the below to the bind config of haproxy 
+         bind *:443 ssl crt /etc/ssl1/certs1/combined.pem ca-file /etc/ssl1/certs1/CAchain.pem verify optional
+
+  
