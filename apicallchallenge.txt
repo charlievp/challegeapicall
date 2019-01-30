@@ -1,4 +1,4 @@
-I would look at this with a chain building issue with the HAproxy unable to identify "Digicerts" root certificate. If I can view the logs and have access to the system, I think I can fix this.
+I would look at this with a chain building issue with the HAproxy unable to identify "Digicerts" root certificate.
 
 Below solution can be attempted.
 
